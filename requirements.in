@@ -1,3 +1,9 @@
 fastapi 
 uvicorn
 APScheduler
+datetime
+httpx
+fastapi
+typing
+pytz
+pandas
