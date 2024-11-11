@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mytb:
+    restart: always
+    image: "thingsboard/tb-postgres"
+    ports:
+      - "9090:9090"
+      - "1883:1883"
+      - "7070:7070"
+      - "5683-5688:5683-5688/udp"
+    environment:
+      TB_QUEUE_TYPE: in-memory
+    volumes:
+      - mytb-data:/data
+      - mytb-logs:/var/log/thingsboard
+    networks:
+      custom-network:
+        ipv4_address: 172.20.0.1
+
+  fastapi-app:   
+    build:
+      context: . 
+      dockerfile: Dockerfile 
+    ports:
+      - "8060:8060"  
+    volumes:
+      - ./myFastapi:/app  
+    networks:
+      custom-network:
+        ipv4_address: 172.20.0.2
+
+volumes:
+  mytb-data:
+    external: true
+  mytb-logs:
+    external: true

@@ -3,7 +3,13 @@ import httpx
 from fastapi import FastAPI, HTTPException, Path, Query, Depends
 # Correct the import below. Assuming you have a `functions` module.
 # Replace 'functions' with the actual module name if different.
-from funtions import convert_time, fetch_all_telemetry
+try:
+    from myFastapi.funtions import convert_time, fetch_all_telemetry
+except:
+    from funtions import convert_time, fetch_all_telemetry
+
+
+
 import os
 from pydantic import BaseModel
 
