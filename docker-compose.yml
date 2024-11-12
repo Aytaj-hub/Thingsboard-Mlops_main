@@ -88,6 +88,7 @@ services:
     networks:
       custom-network:
         ipv4_address: 172.20.0.13
+
   fastapi-app:   
     build:
       context: . 
@@ -171,6 +172,41 @@ services:
     networks:
       custom-network:
         ipv4_address: 172.20.0.17
+
+        
+  airflow:
+    # image: apache/airflow:2.6.3
+    build:
+     context: ./airflow
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: mysql+mysqlconnector://airflow:airflow_password@mysql:3306/airflow
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    ports:
+      - "8081:8081"
+    command: >
+      bash -c "airflow db upgrade &&
+               airflow users create \
+                 --username admin \
+                 --password admin \
+                 --firstname Admin \
+                 --lastname User \
+                 --role Admin \
+                 --email admin@example.com &&
+               airflow scheduler & airflow webserver"
+    networks:
+      custom-network:
+        ipv4_address: 172.20.0.18
 
 networks:
   custom-network:

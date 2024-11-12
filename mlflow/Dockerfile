@@ -7,7 +7,7 @@ FROM python:3.8-slim
 WORKDIR /app
 
 # Install MLflow
-RUN pip install mlflow
+RUN pip install mlflow mysql
 
 # Expose port 5000 for MLflow
 EXPOSE 5000

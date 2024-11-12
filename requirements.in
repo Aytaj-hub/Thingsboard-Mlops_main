@@ -8,3 +8,4 @@ typing
 pytz
 pandas
 mlflow
+mysql
