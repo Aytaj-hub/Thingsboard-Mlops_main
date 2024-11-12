@@ -1,5 +1,5 @@
 # Use the official Python image
-FROM python:3.12
+FROM python:3.8-slim
 
 # Set the working directory
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN echo "Requirements file copied successfully."
 
 COPY myFastapi ./
 
-EXPOSE 8060
+EXPOSE 8060 
 
 # Include a final echo to confirm the image was built successfully
 RUN echo "Docker image built successfully."
