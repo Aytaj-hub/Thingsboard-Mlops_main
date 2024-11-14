@@ -9,4 +9,5 @@ docker volume create mytb-logs
 
 
 
+
 https://thingsboard.io/pricing/?section=trendz-optionsTrendz

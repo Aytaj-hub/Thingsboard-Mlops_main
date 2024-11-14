@@ -11,3 +11,5 @@ python-dotenv
 snowflake
 snowflake-connector-python
 sqlalchemy
+minio
+ak-minio

@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import List, Dict, Any, Set, Tuple, Optional
 import httpx
 from fastapi import Header, HTTPException, Depends
-
-
+from urllib.parse import urljoin, urlencode
+import os
 from fastapi import HTTPException
 import pytz
 
@@ -54,7 +54,11 @@ async def fetch_all_telemetry(
     token: str = token_global 
 ) -> Dict[str, Any]:
 
-    base_url = f"https://dacs.site/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries"
+    base_url = os.getenv('BASE_URL')
+    if not base_url:
+        raise ValueError("BASE_URL environment variable is not set")
+
+    entity_url = urljoin(base_url, f'/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries')
     params = {
         "startTs": start_time_millis,
         "endTs": end_time_millis
@@ -66,7 +70,7 @@ async def fetch_all_telemetry(
         else:
             raise ValueError("telemetry_keys must be a list of strings")
     headers = {'Authorization': f'Bearer {token}'}
-    response = await client.get(base_url, headers=headers, params=params)
+    response = await client.get(entity_url, headers=headers, params=params)
     response.raise_for_status()
     telemetry = response.json()
     return telemetry
