@@ -7,4 +7,7 @@ fastapi
 typing
 pytz
 pandas
-
+python-dotenv
+snowflake
+snowflake-connector-python
+sqlalchemy
