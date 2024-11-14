@@ -30,7 +30,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
 RUN $CONDA_DIR/bin/conda init bash
 
 
-RUN conda install -y python=3.11
+RUN conda install -y python=3.12
 
 # **Option 2: Create a New Environment with a Different Name (Uncomment if Preferred)**
 # RUN conda create -y -n myenv python=3.11
@@ -46,7 +46,7 @@ RUN echo ". $CONDA_DIR/etc/profile.d/conda.sh" >> /home/coder/.bashrc && \
     echo "conda activate base" >> /home/coder/.bashrc
 
 # Set the working directory
-WORKDIR /coder/huseyn/work
+WORKDIR /app
 
 # Optional: Clean up to reduce image size (already handled above, but included for completeness)
 RUN conda clean -a -y
