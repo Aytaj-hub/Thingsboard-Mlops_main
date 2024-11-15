@@ -9,7 +9,7 @@ RUN apt-get update && \
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
 # Install mlflow via pip
-RUN pip3 install mlflow
+RUN pip3 install mlflow dask==2024.9.1 distributed==2024.9.1 numpy==2.0.2
 
 # (Optional) Expose port if needed
 EXPOSE 8888

@@ -4,57 +4,37 @@ services:
     restart: always
     image: "thingsboard/tb-postgres"
     ports:
-      - "9090:9090"
+      - "8080:9090"
       - "1883:1883"
       - "7070:7070"
       - "5683-5688:5683-5688/udp"
     environment:
       TB_QUEUE_TYPE: in-memory
     volumes:
-      - mytb-data:/data
-      - mytb-logs:/var/log/thingsboard
+      - ~/.mytb-data:/data
+      - ~/.mytb-logs:/var/log/thingsboard
     networks:
       custom-network:
         ipv4_address: 172.20.0.10
 
   mytrendz:
-    restart: always
-    image: "thingsboard/trendz:1.11.0"
-    ports:
-      - "8888:8888"
-    environment:
-      TB_API_URL: http://172.20.0.10:9090
-      TRENDZ_LICENSE_SECRET: ${TRENDZ_LICENSE_SECRET}
-      TRENDZ_LICENSE_INSTANCE_DATA_FILE: /data/license.data
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/trendz
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      SCRIPT_ENGINE_PROVIDER: DOCKER_CONTAINER
-      SCRIPT_ENGINE_DOCKER_PROVIDER_URL: mypyexecutor:8080
-      SCRIPT_ENGINE_TIMEOUT: 30000
-    volumes:
-      - mytrendz-data:/data
-      - mytrendz-logs:/var/log/trendz
-    networks:
-      custom-network:
-        ipv4_address: 172.20.0.11
-
-  # mypyexecutor:
-  #   restart: always
-  #   image: "thingsboard/trendz-python-executor:1.11.0"
-  #   ports:
-  #     - "8085:8080"
-  #   environment:
-  #     SCRIPT_ENGINE_RUNTIME_TIMEOUT: 30000
-  #     EXECUTOR_MANAGER: 1
-  #     EXECUTOR_SCRIPT_ENGINE: 6
-  #     THROTTLING_QUEUE_CAPACITY: 10
-  #     THROTTLING_THREAD_POOL_SIZE: 6
-  #     NETWORK_BUFFER_SIZE: 10485760
-  #   networks:
-  #     custom-network:
-  #       ipv4_address: 172.20.0.12
-
+      restart: always
+      image: "thingsboard/trendz:1.11.0"
+      ports:
+        - "8888:8888"
+      environment:
+        TB_API_URL: http://10.0.0.101:8080
+        TRENDZ_LICENSE_SECRET: ${TRENDZ_LICENSE_SECRET}
+        TRENDZ_LICENSE_INSTANCE_DATA_FILE: /data/license.data
+        SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/trendz
+        SPRING_DATASOURCE_USERNAME: postgres
+        SPRING_DATASOURCE_PASSWORD: postgres
+        SCRIPT_ENGINE_PROVIDER: DOCKER_CONTAINER
+        SCRIPT_ENGINE_DOCKER_PROVIDER_URL: mypyexecutor:8181
+        SCRIPT_ENGINE_TIMEOUT: 30000
+      volumes:
+        - ~/.mytrendz-data:/data
+        - ~/.mytrendz-logs:/var/log/trendz
 
   mypyexecutor:
     restart: always
@@ -62,14 +42,15 @@ services:
       context: ./trendz  # Path to your Dockerfile directory
       dockerfile: Dockerfile  # Name of the Dockerfile
     ports:
-      - "8085:8080"
+      - "8181:8181"
     environment:
+      MAX_HEAP_SIZE: 750M
       SCRIPT_ENGINE_RUNTIME_TIMEOUT: 30000
       EXECUTOR_MANAGER: 1
       EXECUTOR_SCRIPT_ENGINE: 6
       THROTTLING_QUEUE_CAPACITY: 10
       THROTTLING_THREAD_POOL_SIZE: 6
-      NETWORK_BUFFER_SIZE: 10485760
+      NETWORK_BUFFER_SIZE: 5242880
     networks:
       custom-network:
         ipv4_address: 172.20.0.12
@@ -79,15 +60,12 @@ services:
     restart: always
     image: "postgres:15"
     ports:
-      - "5432:5432"
+      - "5432"
     environment:
       POSTGRES_DB: trendz
       POSTGRES_PASSWORD: postgres
     volumes:
-      - mytrendz-data-db:/var/lib/postgresql/data
-    networks:
-      custom-network:
-        ipv4_address: 172.20.0.13
+      - ~/.mytrendz-data/db:/var/lib/postgresql/data
 
   fastapi-app:   
     build:
@@ -182,7 +160,7 @@ services:
     container_name: vscode
     restart: always
     ports:
-      - "8081:8080"
+      - "8085:8080"
     depends_on:
       - mlflow
     volumes:
@@ -275,15 +253,7 @@ networks:
 
 volumes:
   mytb-data:
-    external: true
   mytb-logs:
-    external: true
-  mytrendz-data:
-    external: true
-  mytrendz-logs:
-    external: true
-  mytrendz-data-db:
-    external: true
   mysql_data:
   minio_data:
   mlflow-data:
